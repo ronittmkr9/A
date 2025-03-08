@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apology Feature</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Heart Animation */
+    .heart {
+      font-size: 2rem;
+      color: red;
+      animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    /* Heart Shower Animation (Bottom to Up) */
+    .heart-shower {
+      position: absolute;
+      font-size: 1.5rem;
+      color: red;
+      animation: shower 3s forwards;
+    }
+
+    @keyframes shower {
+      0% { transform: translateY(100vh); opacity: 1; }
+      100% { transform: translateY(-100vh); opacity: 0; }
+    }
+
+    .card {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .button {
+      padding: 10px 20px;
+      background-color: #ff4c81;
+      color: white;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: #f53374;
+    }
+
+    /* Celebration effect */
+    .celebration {
+      animation: celebrate 2s infinite;
+    }
+
+    @keyframes celebrate {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.5; }
+    }
+
+    /* For the "I love you my pookie" message */
+    .pookie-message {
+      font-size: 1.5rem;
+      color: #e6007e;
+      font-weight: bold;
+      animation: fadeIn 2s forwards;
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-pink-100 p-4 relative">
+
+  <div id="app" class="text-center space-y-6">
+    <button id="clickMeBtn" class="button">Click Me</button>
+
+    <div id="apologyContent" class="hidden space-y-6">
+      <!-- Floating Hearts (showering effect continuously) -->
+      <div id="floatingHearts" class="absolute inset-0 pointer-events-none"></div>
+
+      <!-- Love Quote -->
+      <div class="card">
+        <h2 class="text-xl font-bold text-red-600">Hi Love,</h2>
+        <p class="text-gray-700 italic" id="loveQuote"></p>
+      </div>
+
+      <!-- Apology Message -->
+      <div class="card">
+        <h2 class="text-xl font-bold text-red-600">To Ori,</h2>
+        <p class="text-gray-700">
+          I am truly sorry for my mistakes. I never meant to hurt you, and I regret my actions deeply. Please forgive me, and let's move forward together. Muah
+          Your Gunda Boyfriend Ronit 
+        </p>
+      </div>
+
+      <!-- Ask if the apology is accepted -->
+      <div id="apologyQuestion" class="hidden space-y-6">
+        <p class="text-xl text-gray-700">Is my apology accepted?</p>
+        <button id="yesBtn" class="button">Yes</button>
+        <button id="noBtn" class="button bg-gray-500 hover:bg-gray-600">No</button>
+      </div>
+
+      <!-- Message to show after "Yes" -->
+      <div id="pookieMessage" class="pookie-message">
+        🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽
+        🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽
+        I love you my pookie princesss
+        🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽
+        🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽🫶🏽
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const loveQuotes = [
+      "Love means never having to say you're sorry, but I'm saying it anyway.",
+      "Apologies require vulnerability, and I open my heart to you.",
+      "A heartfelt apology is the bridge to healing our love."
+    ];
+
+    const clickMeBtn = document.getElementById('clickMeBtn');
+    const apologyContent = document.getElementById('apologyContent');
+    const apologyQuestion = document.getElementById('apologyQuestion');
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const loveQuoteElement = document.getElementById('loveQuote');
+    const floatingHearts = document.getElementById('floatingHearts');
+    const pookieMessage = document.getElementById('pookieMessage');
+
+    // Continuous heart shower effect
+    function createHeartShower() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart', 'heart-shower');
+      heart.style.left = `${Math.random() * 100}%`;
+      heart.style.animationDelay = `${Math.random() * 2}s`;
+      heart.innerHTML = '❤️';
+      floatingHearts.appendChild(heart);
+
+      // Remove heart after animation
+      setTimeout(() => {
+        heart.remove();
+      }, 3000);
+    }
+
+    // Continuously generate hearts
+    setInterval(createHeartShower, 200);  // Creates a heart every 200ms
+
+    // Show apology content when the button is clicked
+    clickMeBtn.addEventListener('click', () => {
+      clickMeBtn.classList.add('hidden');
+      apologyContent.classList.remove('hidden');
+      loveQuoteElement.textContent = loveQuotes[Math.floor(Math.random() * loveQuotes.length)];
+
+      // Show apology question after 3 seconds
+      setTimeout(() => {
+        apologyQuestion.classList.remove('hidden');
+      }, 3000);
+    });
+
+    // If Yes is clicked
+    yesBtn.addEventListener('click', () => {
+      yesBtn.classList.add('celebration');
+
+      // Add celebration effect (heart shower)
+      for (let i = 0; i < 30; i++) {
+        createHeartShower();
+      }
+
+      // Show "I love you my pookie" message
+      setTimeout(() => {
+        pookieMessage.style.display = 'block';
+      }, 2000); // Delay to show the message after the celebration
+    });
+
+    // If No is clicked
+    noBtn.addEventListener('click', () => {
+      noBtn.style.transform = "scale(0.5)";
+      setTimeout(() => {
+        noBtn.style.display = "none";
+        yesBtn.style.transform = "scale(1)";
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
